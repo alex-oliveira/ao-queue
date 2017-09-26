@@ -46,7 +46,7 @@ trait TaskTrait
     /**
      * @return mixed|null
      */
-    public function taskData()
+    public function data()
     {
         if ($this->task && !empty($this->task->data))
             return @unserialize(base64_decode($this->task->data));
