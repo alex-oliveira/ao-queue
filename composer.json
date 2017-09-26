@@ -1,0 +1,24 @@
+{
+    "license": "MIT",
+    "type": "package",
+    "name": "alex-oliveira/ao-queue",
+    "homepage": "https://github.com/alex-oliveira/ao-queue",
+    "description": "Resources for PARALLEL QUEUES with Laravel.",
+    "keywords": ["alex-oliveira", "laravel", "parallel queues", "queues", "queue"],
+    "authors": [
+        {
+            "name": "Alex Oliveira",
+            "homepage": "https://github.com/alex-oliveira",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AoQueue\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.5.9",
+        "laravel/framework": "5.*"
+    }
+}
