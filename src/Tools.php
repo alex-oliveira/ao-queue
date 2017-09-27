@@ -36,7 +36,7 @@ class Tools
      * @param $worker_class string
      * @param $tasks array
      */
-    public function add($worker_class, array $tasks, $group_unique = null)
+    public function add($worker_class, array $tasks, $group_unique = null, $start = true)
     {
         $worker = $this->worker($worker_class);
 
@@ -61,7 +61,8 @@ class Tools
 
         if (count($data) > 0) {
             Task::insert($data);
-            $this->start();
+            if ($start)
+                $this->start();
         }
     }
 

@@ -61,10 +61,8 @@ class MasterWorker extends AoQueueWorker
 
                 if ($worker->qt_min_instances == 0) {
                     $task = AoQueue()->next($worker->id, $params['--unique']);
-                    if (!$task) {
-                        $this->log('There are NO MORE TASKS to "' . $worker->name . '" workers.');
+                    if (!$task)
                         break;
-                    }
 
                     $params['--task_id'] = $task->id;
                 }
@@ -72,7 +70,7 @@ class MasterWorker extends AoQueueWorker
                 Artisan::call('ao-queue:screen', $params);
             }
 
-            $this->log($c . ' "' . $worker->name . '" workers were created.');
+            $this->log($c . ' "' . $worker->name . '" workers with tasks were created.');
         }
     }
 
