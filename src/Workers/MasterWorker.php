@@ -54,26 +54,25 @@ class MasterWorker extends AoQueueWorker
                 continue;
             }
 
-            $this->log('I can create ' . $limit . ' "' . $worker->name . '" workers...');
+            $this->log('I can create ' . $limit . ' "' . $worker->name . '" workers. Let\'s go!');
 
-            if ($worker->qt_min_instances == 0) {
-                $this->log('Finding tasks to "' . $worker->name . '" worker...');
+            for ($c = 0; $c < $limit; $c++) {
+                $params = ['worker_class' => $worker->class, '--unique' => uniqid()];
 
-                $limit = Task::query()->where('worker_id', $worker->id)->where('flag_id', Flag::WAITING)->where(function ($q) {
-                    $q->whereNull('selectable_at')->orWhere('selectable_at', '<', Carbon::now());
-                })->limit($limit)->get()->count();
+                if ($worker->qt_min_instances == 0) {
+                    $task = AoQueue()->next($worker->id, $params['--unique']);
+                    if (!$task) {
+                        $this->log('There are NO MORE TASKS to "' . $worker->name . '" workers.');
+                        break;
+                    }
 
-                if ($limit <= 0) {
-                    $this->log('There are no tasks to "' . $worker->name . '" workers.');
-                    continue;
+                    $params['--task_id'] = $task->id;
                 }
+
+                Artisan::call('ao-queue:screen', $params);
             }
 
-            $this->log('Create ' . $limit . ' workers of type "' . $worker->name . '"...');
-            for ($c = 1; $c <= $limit; $c++)
-                Artisan::call('ao-queue:screen', [
-                    'worker_class' => $worker->class
-                ]);
+            $this->log($c . ' "' . $worker->name . '" workers were created.');
         }
     }
 

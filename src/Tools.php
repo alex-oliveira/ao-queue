@@ -43,7 +43,11 @@ class Tools
         $data = [];
 
         foreach ($tasks as $key => $value) {
-            $task = ['worker_id' => $worker->id, 'group_unique' => $group_unique];
+            $task = [
+                'worker_id' => $worker->id,
+                'group_unique' => $group_unique,
+                'created_at' => \Carbon\Carbon::now()->toDateTimeString()
+            ];
 
             if (is_array($value) || is_object($value)) {
                 $task['reference_id'] = $key;
