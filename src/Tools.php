@@ -67,22 +67,22 @@ class Tools
      */
     public function next($worker_type, $unique)
     {
-        $query = Task::query()
-            ->where('worker_id', $worker_type)
-            ->where('flag_id', Flag::WAITING)
-            ->where(function ($q) {
-                $q->whereNull('selectable_at')->orWhere('selectable_at', '<', \Carbon\Carbon::now());
-            })
-            ->orderBy('created_at');
+        $query = Task::query();
 
-        if (($driver = DB::connection()->getDriverName()) == 'sqlite') {
-            $query->whereRaw('ROWID = 1');
-        } else {
-            $query->limit(1);
-        }
+        $query->whereIn('id', function ($q) use ($query, $worker_type) {
+            $q->select('id')
+                ->from($query->getModel()->getTable())
+                ->where('worker_id', $worker_type)
+                ->where('flag_id', Flag::WAITING)
+                ->where(function ($q) {
+                    $q->whereNull('selectable_at')->orWhere('selectable_at', '<', \Carbon\Carbon::now());
+                })
+                ->orderBy('created_at')
+                ->limit(1);
+        });
 
         try {
-            $query->update(['unique' => $unique, 'flag_id' => Flag::SELECTED]);
+            $qt = $query->update(['unique' => $unique, 'flag_id' => Flag::SELECTED]);
         } catch (\Exception $e) {
             return null;
         }
