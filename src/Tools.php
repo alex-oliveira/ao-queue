@@ -102,7 +102,7 @@ class Tools
     {
         $screens = [];
 
-        exec("screen -list | grep 'ao-queue.' | grep -v grep | awk '{print $1}'", $screens);
+        exec("screen -list | grep '.ao-queue.' | grep -v grep | awk '{print $1}'", $screens);
 
         if (count($screens) <= 0)
             return [];
@@ -112,8 +112,8 @@ class Tools
 
             $obj = new \stdClass();
             $obj->pid = $screen[0];
-            $obj->date = $screen[2];
-            $obj->time = $screen[3];
+            $obj->date = $screen[1];
+            $obj->time = $screen[2];
             $obj->unique = $screen[4];
             $obj->id = $screen[5];
             $obj->type = $screen[6];
