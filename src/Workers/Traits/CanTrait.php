@@ -27,6 +27,7 @@ trait CanTrait
      */
     protected function canWork()
     {
+        $this->log();
         $this->log('Requiring authorizations to work...');
 
         do {
@@ -37,8 +38,7 @@ trait CanTrait
             $this->log('Checking authorization...');
 
             if ($this->canWorkDateTime($now)) {
-                $this->log();
-                $this->log('Confirmed! I can work! Let\'s go!!!');
+                $this->logRelevantBox('Confirmed! I can work! Let\'s go!!!');
 
             } else {
                 $next = new \DateTime($now->format('Y-m-d'));
@@ -55,6 +55,7 @@ trait CanTrait
 
                 $this->log('I only can work at ' . $next->format('H:i:s') . ' in ' . $next->format('d/m/Y') . '.');
                 $this->log('I go sleep ' . $sleep . ' second(s).');
+                $this->log();
             }
 
             sleep($sleep);

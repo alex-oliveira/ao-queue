@@ -5,74 +5,96 @@ namespace AoQueue\Workers\Traits;
 trait LogTrait
 {
 
-    protected $level = 0;
+    public function logLevel($l = null)
+    {
+        static $level = 0;
+
+        if (is_null($l))
+            return $level == 0 ? '' : str_pad('', $level * 4, ' ', STR_PAD_LEFT) . '│';
+
+        if ($l == 0) {
+            $level = 0;
+        } elseif (is_numeric($l) && is_int($l + 0)) {
+            $level = $level + $l;
+        }
+
+        return $level;
+    }
 
     public function logUp()
     {
-        $this->level++;
-        $this->log('');
+        $this->logLevel(1);
     }
 
     public function logDown()
     {
-        $this->log('');
-        $this->level--;
+        $this->logLevel(-1);
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
+    public function logBase($message = '')
+    {
+        echo "\n" . date('Y-m-d H:i:s') . ' #' . $message;
+    }
+
     public function log($message = '')
     {
-        $ident = $this->level == 0 ? '' : str_pad(' ', $this->level * 4, ' ', STR_PAD_LEFT) . '|';
-        echo "\n# " . date('Y-m-d H:i:s') . ' # ' . $ident . ' ' . $message;
-    }
-
-    public function logSimple($message = '')
-    {
-        echo "\n# " . $message;
-    }
-
-    public function logLine()
-    {
-        echo "\n######################################################################################################";
+        $this->logBase($this->logLevel() . ' ' . $message);
     }
 
     public function logEmpty($qt = 1)
     {
         for ($c = 1; $c <= $qt; $c++)
-            echo "\n";
+            $this->logBase();
+    }
+
+    public function logLine()
+    {
+        $this->logBase('#############################################################################################');
+    }
+
+    public function logBox($message = '')
+    {
+        $level = $this->logLevel();
+        $size = (mb_strlen($message) * 3) + 6;
+
+        $this->logBase($level . ' ┌' . str_pad('', $size, '─') . '┐');
+        $this->logBase($level . ' │' . ' ' . $message . ' │');
+        $this->logBase($level . ' └' . str_pad('', $size, '─') . '┘');
+    }
+
+    public function logRelevantBox($message = '')
+    {
+        $this->log();
+        $this->logBox($message);
+        $this->log();
+    }
+
+    public function logBreak()
+    {
+        echo "\n\n";
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public function logStart()
+    public function logTitle($message)
     {
         $this->logLine();
-        $this->logSimple('Hello! I am a "' . $this->type()->name . '" and I go work now!');
+        $this->log($message);
         $this->logLine();
-
-        $this->logEmpty(2);
     }
 
-    public function logStartWork()
-    {
-        $this->logLine();
-        $this->log();
-        $this->log('Lets go work!' . (($task = $this->task()) ? ' Task(' . $task->id . ')' : ''));
-        $this->logUp();
-    }
-
-    public function logSuccess()
+    public function logRelevant($message)
     {
         $this->log();
-        $this->log('Work successful. :)');
+        $this->log($message);
+        $this->log();
     }
 
     public function logError($exception)
     {
-        $this->log();
-        $this->log('ERROR :(');
-
+        $this->logBox('ERROR :(');
         $this->logUp();
         $this->log('Class..: ' . get_class($exception), false);
         $this->log('Code...: ' . $exception->getCode(), false);
@@ -80,31 +102,16 @@ trait LogTrait
         $this->log('Line...: ' . $exception->getLine(), false);
         $this->log('File...: ' . $exception->getFile(), false);
         $this->logDown();
-
-        $this->log();
-        $this->log('Work aborted.');
-    }
-
-    public function logFinishWork()
-    {
-        $this->logDown();
-        $this->log('Work finish!');
         $this->log();
     }
 
-    public function logFinishWorkGroup()
-    {
-        $this->log('Work group work!');
-        $this->log();
-    }
-
-    public function logFinish()
+    public function logFinish($message)
     {
         $this->logLine();
-        $this->logSimple('It is the finish of my life. Hasta La Vista Baby!');
+        $this->logSimple();
         $this->logLine();
 
-        $this->logEmpty(2);
+        echo "\n\n";
     }
 
 }

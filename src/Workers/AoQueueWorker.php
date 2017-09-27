@@ -52,12 +52,12 @@ abstract class AoQueueWorker
                 $this->onError($exception);
             }
 
-            $this->onFinishWork();
-
             if ($this->checkFinishWorkGroup())
                 $this->onFinishWorkGroup();
 
             $this->detachTask();
+
+            $this->onFinishWork();
 
             $this->waitRelax();
         }
@@ -90,12 +90,8 @@ abstract class AoQueueWorker
 
     public function waitAuthorization()
     {
-        $this->logLine();
-        $this->log();
         $this->canWork();
-        $this->log();
-        $this->logLine();
-        $this->logEmpty(2);
+        $this->logBreak();
     }
 
     public function detachTask()
@@ -117,21 +113,26 @@ abstract class AoQueueWorker
 
         $this->log();
         $this->logLine();
-        $this->logEmpty(2);
+        $this->logBreak();
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
     public function onStart()
     {
-        $this->logStart();
+        $this->logTitle('Hello! I am a "' . $this->type()->name . '" and I go work now!');
+        $this->logBreak();
     }
 
     public function onStartWork()
     {
-        $this->level = 0;
+        $this->logLevel(0);
 
-        $this->logStartWork();
+        $this->logLine();
+        $this->log();
+        $this->log('Lets go work!' . (($task = $this->task()) ? ' Task(' . $task->id . ')' : ''));
+        $this->logUp();
+        $this->log();
 
         if (($task = $this->task())) {
             $task->flag_id = Flag::PROCESSING;
@@ -148,7 +149,7 @@ abstract class AoQueueWorker
             $task->save();
         }
 
-        $this->logSuccess();
+        $this->logRelevantBox('Work successful. :)');
     }
 
     public function onError(\Exception $exception)
@@ -160,11 +161,7 @@ abstract class AoQueueWorker
         }
 
         $this->logError($exception);
-    }
-
-    public function onFinishWork()
-    {
-        $this->logFinishWork();
+        $this->logRelevant('Work aborted.');
     }
 
     public function checkFinishWorkGroup()
@@ -190,13 +187,23 @@ abstract class AoQueueWorker
 
     public function onFinishWorkGroup()
     {
-        $this->logFinishWorkGroup();
+        $this->logRelevant('Work group work!');
+    }
+
+    public function onFinishWork()
+    {
+        $this->logDown();
+        $this->log('Work finish!');
+        $this->log();
     }
 
     public function onFinish()
     {
-        $this->logFinish();
         AoQueue()->start();
+
+        $this->logBreak();
+        $this->logTitle('It is the finish of my life. Hasta La Vista Baby!');
+        $this->logBreak();
     }
 
 }
