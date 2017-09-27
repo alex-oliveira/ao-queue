@@ -23,15 +23,15 @@ class ServiceProvider extends BaseServiceProvider
                 __DIR__ . '/../database/migrations' => database_path('migrations'),
                 __DIR__ . '/../database/seeds' => database_path('seeds'),
             ], 'ao-queue');
-
-            $this->commands([
-                RestartCommand::class,
-                RunCommand::class,
-                ScreenCommand::class,
-                StartCommand::class,
-                StopCommand::class,
-            ]);
         }
+
+        $this->commands([
+            RestartCommand::class,
+            RunCommand::class,
+            ScreenCommand::class,
+            StartCommand::class,
+            StopCommand::class,
+        ]);
     }
 
     public function register()
