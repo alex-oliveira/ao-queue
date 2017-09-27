@@ -21,7 +21,7 @@ class ScreenCommand extends Command
 
         $command = str_slug(kebab_case($worker_type->name));
         $command = 'ao-queue.' . date('Y-m-d.H-i-s') . '.' . $worker_unique . '.' . $worker_type->id . '.' . $command;
-        $command = ' screen -dmS "' . $command . '"';
+        $command = ' screen -dmSL "' . $command . '"';
         $command .= ' php artisan ao-queue:run "' . $worker_type->class . '" --unique="' . $worker_unique . '" ';
 
         if (($task_id = $this->option('task_id')))

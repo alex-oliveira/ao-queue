@@ -5,6 +5,7 @@ namespace AoQueue;
 use AoQueue\Constants\Flag;
 use AoQueue\Models\Task;
 use AoQueue\Models\Worker;
+use Illuminate\Support\Facades\DB;
 
 class Tools
 {
@@ -72,8 +73,13 @@ class Tools
             ->where(function ($q) {
                 $q->whereNull('selectable_at')->orWhere('selectable_at', '<', \Carbon\Carbon::now());
             })
-            ->orderBy('created_at')
-            ->limit(1);
+            ->orderBy('created_at');
+
+        if (($driver = DB::connection()->getDriverName()) == 'sqlite') {
+            $query->whereRaw('ROWID = 1');
+        } else {
+            $query->limit(1);
+        }
 
         try {
             $query->update(['unique' => $unique, 'flag_id' => Flag::SELECTED]);
