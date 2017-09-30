@@ -57,9 +57,10 @@ class CreateAoQueueTables extends Migration
 
         Schema::create('ao_queue__logs', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('type_id')->unsigned();
+            $table->foreign('type_id')->references('id')->on('ao_queue__types');
             $table->bigInteger('task_id')->unsigned();
             $table->foreign('task_id')->references('id')->on('ao_queue__tasks');
-            $table->string('type');
             $table->string('message');
             $table->timestamps();
         });

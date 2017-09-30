@@ -10,7 +10,7 @@ class Log extends Model
     protected $table = 'ao_queue__logs';
 
     protected $fillable = [
-        'type_id', 'task_id', 'type', 'message'
+        'type_id', 'task_id', 'message'
     ];
 
     public function task()
