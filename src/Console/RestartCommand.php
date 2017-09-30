@@ -13,7 +13,7 @@ class RestartCommand extends Command
 
     public function handle()
     {
-        $this->call('ao-queue:stop', ['--all']);
+        $this->call('ao-queue:stop', ['--all' => true]);
         $this->call('ao-queue:start');
     }
 

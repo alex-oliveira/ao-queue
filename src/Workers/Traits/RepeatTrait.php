@@ -10,7 +10,7 @@ trait RepeatTrait
      *
      * @var bool
      */
-    protected $repeat = false;
+    protected $repeat = true;
 
     /**
      * @param null|bool $repeat
@@ -18,9 +18,9 @@ trait RepeatTrait
      */
     public function repeat($repeat = null)
     {
-        if (is_null($repeat))
-            return $this->getRepeat();
-        return $this->setRepeat($repeat);
+        if (is_bool($repeat))
+            return $this->setRepeat($repeat);
+        return $this->getRepeat();
     }
 
     /**
@@ -32,7 +32,7 @@ trait RepeatTrait
     }
 
     /**
-     * @param $repeat
+     * @param bool $repeat
      * @return $this
      */
     public function setRepeat($repeat)

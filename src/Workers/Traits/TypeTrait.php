@@ -2,36 +2,35 @@
 
 namespace AoQueue\Workers\Traits;
 
-use AoQueue\Models\Worker;
+use AoQueue\Models\Type;
 use Illuminate\Database\Eloquent\Model;
 
 trait TypeTrait
 {
 
     /**
-     * @var Worker|Model;
+     * @var Type|Model;
      */
     protected $type = null;
 
     /**
      * @var int
      */
-    protected $type_last_load = 0;
+    protected $last_set = 0;
 
     /**
-     * @param Worker $type
-     * @return $this|null|Worker|Model
+     * @param Type $type
+     * @return $this|null|Type|Model
      */
     public function type($type = null)
     {
         if (is_null($type))
             return $this->getType();
-
         return $this->setType($type);
     }
 
     /**
-     * @return null|Worker
+     * @return null|Type
      */
     public function getType()
     {
@@ -39,16 +38,23 @@ trait TypeTrait
     }
 
     /**
-     * @param Worker $type
+     * @param Type $type
      * @return $this
      */
     public function setType($type)
     {
         $this->type = $type;
-        $this->type_last_load = time();
-
+        $this->last_set = time();
         return $this;
     }
+
+    public function refreshType()
+    {
+        if (time() - $this->last_set > 2)
+            $this->type($this->type->fresh());
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Return a number list of days at that the worker can work.
@@ -59,7 +65,7 @@ trait TypeTrait
      */
     public function workDays()
     {
-        return explode(',', $this->type->work_days);
+        return $this->type->work_days;
     }
 
     /**

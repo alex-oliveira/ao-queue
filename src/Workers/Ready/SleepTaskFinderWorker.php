@@ -1,11 +1,11 @@
 <?php
 
-namespace AoQueue\Workers;
+namespace AoQueue\Workers\Ready;
 
-class SleepTaskFinderWorker extends AoQueueWorker
+use AoQueue\Workers\RepeaterWorker;
+
+class SleepTaskFinderWorker extends RepeaterWorker
 {
-
-    public $repeat = true;
 
     public function work()
     {

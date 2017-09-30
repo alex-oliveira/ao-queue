@@ -20,7 +20,7 @@ class CreateAoQueueTables extends Migration
             $table->string('description')->nullable();
         });
 
-        Schema::create('ao_queue__workers', function (Blueprint $table) {
+        Schema::create('ao_queue__types', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('active')->default(1);
             $table->string('name');
@@ -42,9 +42,9 @@ class CreateAoQueueTables extends Migration
             $table->bigIncrements('id');
             $table->tinyInteger('flag_id')->unsigned()->default(\AoQueue\Constants\Flag::WAITING)->index();
             $table->foreign('flag_id')->references('id')->on('ao_queue__flags');
-            $table->integer('worker_id')->unsigned();
-            $table->foreign('worker_id')->references('id')->on('ao_queue__workers');
-            $table->string('unique')->nullable()->unique();
+            $table->integer('type_id')->unsigned();
+            $table->foreign('type_id')->references('id')->on('ao_queue__types');
+            $table->string('worker_unique')->nullable()->unique();
             $table->string('group_unique')->nullable()->index();
             $table->string('reference_id')->index();
             $table->text('data')->nullable();
@@ -74,7 +74,7 @@ class CreateAoQueueTables extends Migration
     {
         Schema::dropIfExists('ao_queue__logs');
         Schema::dropIfExists('ao_queue__tasks');
-        Schema::dropIfExists('ao_queue__workers');
+        Schema::dropIfExists('ao_queue__types');
         Schema::dropIfExists('ao_queue__flags');
     }
 }

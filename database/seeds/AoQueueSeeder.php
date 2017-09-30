@@ -8,7 +8,7 @@ class AoQueueSeeder extends Seeder
     public function run()
     {
         $this->call(AoQueueFlagSeeder::class);
-        $this->call(AoQueueWorkerSeeder::class);
+        $this->call(AoQueueTypeSeeder::class);
     }
 
 }

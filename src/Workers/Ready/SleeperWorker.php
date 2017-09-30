@@ -1,8 +1,10 @@
 <?php
 
-namespace AoQueue\Workers;
+namespace AoQueue\Workers\Ready;
 
-class SleeperWorker extends AoQueueWorker
+use AoQueue\Workers\TaskWorker;
+
+class SleeperWorker extends TaskWorker
 {
 
     public function work()

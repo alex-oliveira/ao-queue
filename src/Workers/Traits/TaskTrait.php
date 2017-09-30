@@ -20,7 +20,6 @@ trait TaskTrait
     {
         if (is_null($task))
             return $this->getTask();
-
         return $this->setTask($task);
     }
 
@@ -39,19 +38,7 @@ trait TaskTrait
     public function setTask($task)
     {
         $this->task = $task;
-
         return $this;
-    }
-
-    /**
-     * @return mixed|null
-     */
-    public function data()
-    {
-        if ($this->task && !empty($this->task->data))
-            return @unserialize(base64_decode($this->task->data));
-
-        return null;
     }
 
 }

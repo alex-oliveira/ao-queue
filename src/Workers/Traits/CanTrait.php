@@ -25,7 +25,7 @@ trait CanTrait
     /**
      * If now isn't the work's hour, this method make the worker sleep until it's the work's hour.
      */
-    protected function canWork()
+    protected function waitPermissionToWork()
     {
         $this->log();
         $this->log('Requiring authorizations to work...');
@@ -59,9 +59,6 @@ trait CanTrait
             }
 
             sleep($sleep);
-
-            if ($sleep > 0)
-                $this->refresh();
 
         } while ($sleep > 0);
     }

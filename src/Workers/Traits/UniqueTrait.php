@@ -18,7 +18,6 @@ trait UniqueTrait
     {
         if (is_null($unique))
             return $this->getUnique();
-
         return $this->setUnique($unique);
     }
 
@@ -37,7 +36,6 @@ trait UniqueTrait
     public function setUnique($unique)
     {
         $this->unique = $unique;
-
         return $this;
     }
 

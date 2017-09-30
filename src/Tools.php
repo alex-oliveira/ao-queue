@@ -4,47 +4,49 @@ namespace AoQueue;
 
 use AoQueue\Constants\Flag;
 use AoQueue\Models\Task;
-use AoQueue\Models\Worker;
+use AoQueue\Models\Type;
 use Illuminate\Support\Facades\DB;
 
 class Tools
 {
 
     /**
-     * @param $worker_class string
-     * @return Worker
+     * @param $type_class string
+     * @return Type
      */
-    public function worker($worker_class)
+    public function type($type_class)
     {
-        if (substr($worker_class, 0, 1) == '\\')
-            $worker_class = substr($worker_class, 1);
+        if (substr($type_class, 0, 1) == '\\')
+            $type_class = substr($type_class, 1);
 
-        $worker = Worker::query()->where('class', $worker_class)->get()->first();
+        $type = Type::query()->where('class', $type_class)->get()->first();
 
-        if (!$worker) {
-            $worker = new Worker();
-            $worker->name = class_basename($worker_class);
-            $worker->class = $worker_class;
-            $worker->save();
-            $worker->refresh();
+        if (!$type) {
+            $type = new Type();
+            $type->name = class_basename($type_class);
+            $type->class = $type_class;
+            $type->save();
+            $type->refresh();
         }
 
-        return $worker;
+        return $type;
     }
 
     /**
-     * @param $worker_class string
+     * @param $type_class string
      * @param $tasks array
+     * @param $group_unique string
+     * @param $start bool
      */
-    public function add($worker_class, array $tasks, $group_unique = null, $start = true)
+    public function add($type_class, array $tasks, $group_unique = null, $start = true)
     {
-        $worker = $this->worker($worker_class);
+        $type = $this->type($type_class);
 
-        $data = [];
+        $inserts = [];
 
         foreach ($tasks as $key => $value) {
             $task = [
-                'worker_id' => $worker->id,
+                'type_id' => $type->id,
                 'group_unique' => $group_unique,
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString()
             ];
@@ -56,28 +58,29 @@ class Tools
                 $task['reference_id'] = $value;
             }
 
-            $data[] = $task;
+            $inserts[] = $task;
         }
 
-        if (count($data) > 0) {
-            Task::insert($data);
+        if (count($inserts) > 0) {
+            Task::insert($inserts);
             if ($start)
                 $this->start();
         }
     }
 
     /**
-     * @param $worker string
+     * @param $type_id int
+     * @param $worker_unique string
      * @return bool|Task
      */
-    public function next($worker_type, $unique)
+    public function next($type_id, $worker_unique)
     {
         $query = Task::query();
 
-        $query->whereIn('id', function ($q) use ($query, $worker_type) {
+        $query->whereIn('id', function ($q) use ($query, $type_id) {
             $q->select('id')
                 ->from($query->getModel()->getTable())
-                ->where('worker_id', $worker_type)
+                ->where('type_id', $type_id)
                 ->where('flag_id', Flag::WAITING)
                 ->where(function ($q) {
                     $q->whereNull('selectable_at')->orWhere('selectable_at', '<', \Carbon\Carbon::now());
@@ -87,12 +90,12 @@ class Tools
         });
 
         try {
-            $qt = $query->update(['unique' => $unique, 'flag_id' => Flag::SELECTED]);
+            $query->update(['worker_unique' => $worker_unique, 'flag_id' => Flag::SELECTED]);
         } catch (\Exception $e) {
             return null;
         }
 
-        return Task::query()->where('unique', $unique)->limit(1)->get()->first();
+        return Task::query()->where('worker_unique', $worker_unique)->limit(1)->get()->first();
     }
 
     /**
@@ -115,8 +118,8 @@ class Tools
             $obj->date = $screen[1];
             $obj->time = $screen[2];
             $obj->unique = $screen[4];
-            $obj->id = $screen[5];
-            $obj->type = $screen[6];
+            $obj->type_id = $screen[5];
+            $obj->type_class = $screen[6];
 
             $screens[$s] = $obj;
         }
@@ -129,7 +132,7 @@ class Tools
         $pid = null;
 
         foreach ($this->screens() as $screen) {
-            if ($screen->id == 1) {
+            if ($screen->type_id == 1) {
                 $pid = $screen->pid;
                 break;
             }

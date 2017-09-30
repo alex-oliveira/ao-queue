@@ -39,7 +39,7 @@ class StopCommand extends Command
             echo str_pad($screen->pid, 5) . ' | ';
             echo str_pad($screen->date . ' às ' . $screen->time, 23) . ' |';
             echo str_pad($screen->unique, 14) . ' | ';
-            echo $screen->type;
+            echo $screen->type_class;
         }
         echo "\n # |-------|------------------------|---------------|------------------------------------------------|";
         echo "\n # \n \n";
