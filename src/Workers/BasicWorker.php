@@ -56,6 +56,7 @@ abstract class BasicWorker
         $this->log('Work finish!');
         $this->log();
         $this->logLine();
+        $this->logBreak();
     }
 
 }

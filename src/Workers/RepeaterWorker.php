@@ -54,7 +54,6 @@ abstract class RepeaterWorker extends BasicWorker
             return;
         }
 
-        $this->logBreak();
         $this->log();
         $this->log('Checking relax time...');
 
@@ -74,7 +73,6 @@ abstract class RepeaterWorker extends BasicWorker
 
     public function onFinishLoop()
     {
-        $this->logBreak();
         $this->logTitle('Loop finish. Hasta La Vista Baby!');
         $this->logBreak();
     }
