@@ -52,7 +52,9 @@ $ php artisan ao-queue:start
 
 namespace App\Workers;
 
-class MyWorker extends AoQueueWorker
+use AoQueue\Workers\TaskWorker;
+
+class MyWorker extends TaskWorker
 {
     public function work()
     {
