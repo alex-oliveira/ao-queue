@@ -7,11 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Type extends Model
 {
 
-    protected $table = 'ao_queue__types';
-
     protected $fillable = [
         'active', 'name', 'class', 'description', 'work_days', 'wake_up_hour', 'sleep_hour', 'relax_seconds'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->connection = AoQueue()->getConnectionName();
+        $this->table = AoQueue()->getTypesTableName();
+
+        parent::__construct($attributes);
+    }
 
     public function getWorkDaysAttribute($value)
     {

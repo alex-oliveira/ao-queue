@@ -25,8 +25,7 @@ $ composer require alex-oliveira/ao-queue
 
 #### Publish Vendors
 ````
-$ php artisan vendor:publish --tag="ao-queue"
-$ composer dump
+$ php artisan vendor:publish --tag="ao-queue" && composer du
 ````
 
 #### Run Migrations

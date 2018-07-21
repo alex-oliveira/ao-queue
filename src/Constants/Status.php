@@ -2,7 +2,7 @@
 
 namespace AoQueue\Constants;
 
-class Flag
+class Status
 {
 
     CONST WAITING = 1;

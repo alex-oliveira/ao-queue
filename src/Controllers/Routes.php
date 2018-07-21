@@ -1,10 +1,10 @@
 <?php
 
-$config = [
-    'namespace' => 'AoQueue\Http\Controllers',
-    'prefix' => 'ao-queue',
-    'middleware' => ['api']
-];
+$config = config('ao-queue.routes.config');
+
+if (empty($config)) {
+    return null;
+}
 
 Route::group($config, function () {
 

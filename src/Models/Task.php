@@ -8,11 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
 
-    protected $table = 'ao_queue__tasks';
-
     protected $fillable = [
-        'flag_id', 'type_id', 'worker_unique', 'group_unique', 'reference_id', 'data', 'selectable_at'
+        'status', 'type_id', 'worker_unique', 'group_unique', 'reference_id', 'data', 'selectable_at'
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->connection = AoQueue()->getConnectionName();
+        $this->table = AoQueue()->getTasksTableName();
+
+        parent::__construct($attributes);
+    }
 
     public function getDataAttribute($value)
     {
@@ -26,19 +32,9 @@ class Task extends Model
         $this->attributes['data'] = base64_encode(serialize($value));
     }
 
-    public function flag()
-    {
-        return $this->belongsTo(Flag::class);
-    }
-
     public function type()
     {
         return $this->belongsTo(Type::class);
-    }
-
-    public function logs()
-    {
-        return $this->hasMany(Log::class);
     }
 
 }

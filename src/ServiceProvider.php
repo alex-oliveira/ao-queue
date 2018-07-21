@@ -14,12 +14,13 @@ class ServiceProvider extends BaseServiceProvider
 
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
+        $this->loadRoutesFrom(__DIR__ . '/Controllers/Routes.php');
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'ao-queue');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
+                __DIR__ . '/../configs' => config_path(),
                 __DIR__ . '/../database/migrations' => database_path('migrations'),
                 __DIR__ . '/../database/seeds' => database_path('seeds'),
             ], 'ao-queue');
@@ -40,7 +41,7 @@ class ServiceProvider extends BaseServiceProvider
             return new Tools();
         });
 
-        require_once(__DIR__ . '/Utils/helpers.php');
+        require_once(__DIR__ . '/Helpers.php');
     }
 
 }

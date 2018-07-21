@@ -9,12 +9,20 @@ use Illuminate\Support\Facades\Artisan;
 class MasterWorker extends RepeaterWorker
 {
 
+    protected $last_work = 0;
+
     public function next()
     {
+        if (!$this->repeat())
+            return false;
+
         static $count = 0;
 
-        if ($count > 0)
-            $this->command()->confirm('REPEAT ?', true);
+        do {
+            if ($count > 0)
+                $this->command()->confirm('REPEAT ' . $count . '?', true);
+
+        } while ((time() - $this->last_work) < config('ao-queue.master.seconds_between_requests', 5));
 
         return ++$count;
     }
@@ -68,6 +76,13 @@ class MasterWorker extends RepeaterWorker
 
             $this->log($c . ' "' . $type->name . '" workers with tasks were created.');
         }
+
+        $params = $this->params();
+        if (isset($params[0]) && $params[0] == true) {
+            $this->repeat(false);
+        }
+
+        $this->last_work = time();
     }
 
 }

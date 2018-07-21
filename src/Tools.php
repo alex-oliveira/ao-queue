@@ -2,13 +2,45 @@
 
 namespace AoQueue;
 
-use AoQueue\Constants\Flag;
+use AoQueue\Constants\Status;
 use AoQueue\Models\Task;
 use AoQueue\Models\Type;
 use Illuminate\Support\Facades\DB;
 
 class Tools
 {
+
+    /**
+     * @return string
+     */
+    public function getConnectionName()
+    {
+        return config('ao-queue.db.connection', env('DB_CONNECTION', 'mysql'));
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypesTableName()
+    {
+        return config('ao-queue.db.tables.types', 'ao_queue__types');
+    }
+
+    /**
+     * @return string
+     */
+    public function getTasksTableName()
+    {
+        return config('ao-queue.db.tables.tasks', 'ao_queue__tasks');
+    }
+
+    /**
+     * @return string
+     */
+    public function getScreenNamespace()
+    {
+        return str_slug(config('ao-queue.screens.namespace', 'ao-queue'));
+    }
 
     /**
      * @param $type_class string
@@ -81,7 +113,7 @@ class Tools
             $q->select('id')
                 ->from($query->getModel()->getTable())
                 ->where('type_id', $type_id)
-                ->where('flag_id', Flag::WAITING)
+                ->where('status', Status::WAITING)
                 ->where(function ($q) {
                     $q->whereNull('selectable_at')->orWhere('selectable_at', '<', \Carbon\Carbon::now());
                 })
@@ -90,7 +122,7 @@ class Tools
         });
 
         try {
-            $query->update(['worker_unique' => $worker_unique, 'flag_id' => Flag::SELECTED]);
+            $query->update(['worker_unique' => $worker_unique, 'status' => Status::SELECTED]);
         } catch (\Exception $e) {
             return null;
         }
@@ -105,7 +137,7 @@ class Tools
     {
         $screens = [];
 
-        exec("screen -list | grep '.ao-queue.' | grep -v grep | awk '{print $1}'", $screens);
+        exec("screen -list | grep '." . $this->getScreenNamespace() . ".' | grep -v grep | awk '{print $1}'", $screens);
 
         if (count($screens) <= 0)
             return [];

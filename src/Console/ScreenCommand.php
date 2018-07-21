@@ -19,7 +19,7 @@ class ScreenCommand extends Command
         $worker_unique = ($worker_unique = $this->option('worker_unique')) ?: uniqid();
 
         $command = str_slug(kebab_case($type->name));
-        $command = date('Y-m-d.H-i-s') . '.ao-queue.' . $worker_unique . '.' . $type->id . '.' . $command;
+        $command = date('Y-m-d.H-i-s') . '.' . AoQueue()->getScreenNamespace() . '.' . $worker_unique . '.' . $type->id . '.' . $command;
         $command = ' screen -dmSL "' . $command . '" ';
         $command .= ' php artisan ao-queue:run "' . $type->class . '" --worker_unique="' . $worker_unique . '" ';
 

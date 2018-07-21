@@ -1,6 +1,6 @@
 <?php
 
-namespace AoQueue\Http\Controllers;
+namespace AoQueue\Controllers;
 
 use Illuminate\Routing\Controller;
 
