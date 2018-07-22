@@ -97,9 +97,9 @@ trait TypeTrait
      *
      * @return integer
      */
-    public function relaxSeconds()
+    public function lockSeconds()
     {
-        return $this->type->relax_seconds;
+        return $this->type->lock_seconds;
     }
 
 }

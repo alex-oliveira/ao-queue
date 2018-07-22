@@ -18,7 +18,7 @@ class AoQueueSeeder extends Seeder
 //                'active' => 0,
 //                'name' => 'SleepTaskFinderWorker',
 //                'class' => \AoQueue\Workers\Ready\SleepTaskFinderWorker::class,
-//                'relax_seconds' => 10,
+//                'lock_seconds' => 10,
 //                'qt_min_instances' => 1,
 //                'qt_max_instances' => 1
 //            ],

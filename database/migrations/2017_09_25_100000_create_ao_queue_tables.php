@@ -22,12 +22,15 @@ class CreateAoQueueTables extends Migration
                 $table->string('work_days')->default('1,2,3,4,5,6,7');
                 $table->tinyInteger('wake_up_hour')->default(0);
                 $table->tinyInteger('sleep_hour')->default(24);
-                $table->integer('relax_seconds')->default(0);
+                $table->integer('lock_seconds')->default(0);
+                $table->integer('ignore_seconds')->default(0);
                 $table->integer('qt_min_instances')->default(0);
                 $table->integer('qt_max_instances')->default(10);
                 $table->integer('qt_works')->default(0);
                 $table->integer('qt_errors')->default(0);
                 $table->integer('qt_success')->default(0);
+                $table->timestamp('selectable_at')->nullable();
+                $table->timestamp('finished_at')->nullable();
                 $table->timestamps();
             });
 

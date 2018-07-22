@@ -5,6 +5,7 @@ namespace AoQueue\Workers;
 use AoQueue\Workers\Traits\CanTrait;
 use AoQueue\Workers\Traits\RepeatTrait;
 use AoQueue\Workers\Traits\TypeTrait;
+use Carbon\Carbon;
 
 abstract class RepeaterWorker extends BasicWorker
 {
@@ -29,7 +30,7 @@ abstract class RepeaterWorker extends BasicWorker
 
     public function next()
     {
-        $this->onRelax();
+        $this->onLock();
 
         $this->refreshType();
 
@@ -45,7 +46,7 @@ abstract class RepeaterWorker extends BasicWorker
         return $this->repeat();
     }
 
-    public function onRelax()
+    public function onLock()
     {
         static $first = true;
 
@@ -55,13 +56,13 @@ abstract class RepeaterWorker extends BasicWorker
         }
 
         $this->log();
-        $this->log('Checking relax time...');
+        $this->log('Checking lock time...');
 
-        if (($s = $this->relaxSeconds()) > 0) {
-            $this->log('Yahoo! I have ' . $s . ' second(s) to relax. Let\'s go sleep!!!');
+        if (($s = $this->lockSeconds()) > 0) {
+            $this->log('Yahoo! I have ' . $s . ' second(s) to stay locked. Let\'s go sleep!!!');
             sleep($s);
         } else {
-            $this->log('I don\'t have time to relax. :(');
+            $this->log('I don\'t have time to stay locked. :(');
         }
     }
 
@@ -75,6 +76,28 @@ abstract class RepeaterWorker extends BasicWorker
     {
         $this->logTitle('Loop finish. Hasta La Vista Baby!');
         $this->logBreak();
+    }
+
+    public function onSuccess()
+    {
+        $type = $this->type();
+
+        $type->refresh();
+
+        if ($type->ignore_seconds > 0) {
+
+            $next = Carbon::now()->addSeconds($type->ignore_seconds);
+
+            if (empty($type->selectable_at) || (new Carbon($type->selectable_at) < $next)) {
+                $type->selectable_at = $next;
+            }
+
+        }
+
+        $type->finished_at = Carbon::now();
+        $type->save();
+
+        parent::onSuccess();
     }
 
 }

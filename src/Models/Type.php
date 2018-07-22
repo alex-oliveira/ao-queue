@@ -8,7 +8,7 @@ class Type extends Model
 {
 
     protected $fillable = [
-        'active', 'name', 'class', 'description', 'work_days', 'wake_up_hour', 'sleep_hour', 'relax_seconds'
+        'active', 'name', 'class', 'work_days', 'wake_up_hour', 'sleep_hour', 'lock_seconds', 'ignore_seconds', 'qt_min_instances', 'qt_max_instances', 'selectable_at'
     ];
 
     public function __construct(array $attributes = [])

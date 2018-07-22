@@ -4,7 +4,9 @@ namespace AoQueue\Workers\Ready;
 
 use AoQueue\Models\Type;
 use AoQueue\Workers\RepeaterWorker;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class MasterWorker extends RepeaterWorker
 {
@@ -39,7 +41,12 @@ class MasterWorker extends RepeaterWorker
         }
 
         $this->log('Getting active workers...');
-        $types = Type::query()->where('active', 1)->get();
+        $types = Type::query()
+            ->where('active', 1)
+            ->where(function($q){
+                $q->whereNull('selectable_at')->orWhere('selectable_at', '<=', Carbon::now());
+            })
+            ->get();
 
         foreach ($types as $type) {
             $this->log();
