@@ -82,7 +82,7 @@ abstract class RepeaterWorker extends BasicWorker
     {
         $type = $this->type();
 
-        $type->refresh();
+        $this->refreshType(1);
 
         if ($type->ignore_seconds > 0) {
 

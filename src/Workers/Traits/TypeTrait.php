@@ -48,9 +48,9 @@ trait TypeTrait
         return $this;
     }
 
-    public function refreshType()
+    public function refreshType($seconds = 2)
     {
-        if (time() - $this->last_set > 2)
+        if (time() - $this->last_set > $seconds)
             $this->type($this->type->fresh());
     }
 
