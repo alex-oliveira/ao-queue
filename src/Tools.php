@@ -107,23 +107,17 @@ class Tools
      */
     public function next($type_id, $worker_unique)
     {
-        $query = Task::query();
+        $qt = Task::query()
+            ->where('type_id', $type_id)
+            ->where('status', Status::WAITING)
+            ->where(function ($q) {
+                $q->whereNull('selectable_at')->orWhere('selectable_at', '<', \Carbon\Carbon::now());
+            })
+            ->orderBy('created_at')
+            ->limit(1)
+            ->update(['worker_unique' => $worker_unique, 'status' => Status::SELECTED]);
 
-        $query->whereIn('id', function ($q) use ($query, $type_id) {
-            $q->select('id')
-                ->from($query->getModel()->getTable())
-                ->where('type_id', $type_id)
-                ->where('status', Status::WAITING)
-                ->where(function ($q) {
-                    $q->whereNull('selectable_at')->orWhere('selectable_at', '<', \Carbon\Carbon::now());
-                })
-                ->orderBy('created_at')
-                ->limit(1);
-        });
-
-        try {
-            $query->update(['worker_unique' => $worker_unique, 'status' => Status::SELECTED]);
-        } catch (\Exception $e) {
+        if ($qt == 0) {
             return null;
         }
 
